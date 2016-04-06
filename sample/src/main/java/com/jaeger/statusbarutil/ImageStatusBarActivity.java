@@ -1,5 +1,6 @@
 package com.jaeger.statusbarutil;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,7 @@ public class ImageStatusBarActivity extends BaseActivity {
     private TextView mTvStatusAlpha;
     private RelativeLayout mRootLayout;
     private Button mBtnChangeBackground;
+    private View mChangeStyle;
     private boolean isBgChanged;
     private SeekBar mSbChangeAlpha;
 
@@ -36,16 +38,25 @@ public class ImageStatusBarActivity extends BaseActivity {
         mBtnChangeBackground = (Button) findViewById(R.id.btn_change_background);
         mTvStatusAlpha = (TextView) findViewById(R.id.tv_status_alpha);
         mSbChangeAlpha = (SeekBar) findViewById(R.id.sb_change_alpha);
+        mChangeStyle = findViewById(R.id.btn_change_to_color);
 
         mBtnChangeBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 isBgChanged = !isBgChanged;
+                StatusBarUtil.setTransparent(ImageStatusBarActivity.this);
                 if (isBgChanged) {
                     mRootLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_girl));
                 } else {
                     mRootLayout.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_monkey));
                 }
+            }
+        });
+
+        mChangeStyle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StatusBarUtil.setColor(ImageStatusBarActivity.this, Color.RED);
             }
         });
 

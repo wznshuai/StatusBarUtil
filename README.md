@@ -1,3 +1,5 @@
+此fork是为了解决同一个Activity中不同fragment之间着色模式和沉浸模式的切换，并且解决了5.0以上沉浸模式下只能设置根VIEW图片的情况
+
 # StatusBarUtil
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-StatusBarUtil-green.svg?style=true)](https://android-arsenal.com/details/1/3341)
 

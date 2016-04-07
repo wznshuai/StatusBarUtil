@@ -16,15 +16,24 @@ import android.widget.LinearLayout;
 
 /**
  * Created by Jaeger on 16/2/14.
- *
+ * <p/>
  * Email: chjie.jaeger@gamil.com
  * GitHub: https://github.com/laobie
  */
 public class StatusBarUtil {
 
-    public static final int DEFAULT_STATUS_BAR_ALPHA = 112;
+    public static final int DEFAULT_STATUS_BAR_ALPHA = 0;
     private static final String CUSTOM_TAG = "CUSTOM_TAG";
     private static final String CUSTOM_TOP_MARGIN = "CUSTOM_TOP_MARGIN";
+    private static final int DEFAULT_COLOR = Color.BLACK;
+
+    /**
+     *
+     * @param activity
+     */
+    public static void setDefaultColor(Activity activity){
+        setColor(activity, DEFAULT_COLOR);
+    }
 
     /**
      * 设置状态栏颜色
@@ -45,11 +54,9 @@ public class StatusBarUtil {
      */
     public static void setColor(Activity activity, int color, int statusBarAlpha) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             activity.getWindow().setStatusBarColor(calculateStatusColor(color, statusBarAlpha));
-            ViewCompat.requestApplyInsets(getContentView(activity).getChildAt(0));
+            activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LOW_PROFILE);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             resetSatusBar(activity);
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -123,12 +130,15 @@ public class StatusBarUtil {
      * @param activity 需要设置的activity
      */
     public static void setTransparent(Activity activity) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            return;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            transparentStatusBar(activity);
+            ViewCompat.requestApplyInsets(activity.getWindow().getDecorView());
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resetSatusBar(activity);
+            transparentStatusBar(activity);
+            setRootView(activity, false);
         }
-        resetSatusBar(activity);
-        transparentStatusBar(activity);
-        setRootView(activity, false);
+
     }
 
     private static void resetSatusBar(Activity activity) {
@@ -137,12 +147,12 @@ public class StatusBarUtil {
         if (null != cutomView)
             viewGroup.removeView(cutomView);
         View rootView = viewGroup.getChildAt(0);
-        if(null != rootView){
+        if (null != rootView) {
             String tag = (String) rootView.getTag();
-            if(!TextUtils.isEmpty(tag) && tag.equals(CUSTOM_TOP_MARGIN)){
+            if (!TextUtils.isEmpty(tag) && tag.equals(CUSTOM_TOP_MARGIN)) {
                 int statusHeight = getStatusBarHeight(activity);
                 FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rootView.getLayoutParams();
-                if(null != lp && lp.topMargin >= statusHeight){
+                if (null != lp && lp.topMargin >= statusHeight) {
                     lp.topMargin -= statusHeight;
                     rootView.setTag(null);
                 }
@@ -390,9 +400,9 @@ public class StatusBarUtil {
         ViewGroup rootView = (ViewGroup) ((ViewGroup) activity.findViewById(android.R.id.content)).getChildAt(0);
         int statusHeight = getStatusBarHeight(activity);
         ViewCompat.setFitsSystemWindows(rootView, false);
-        if(isFitsSystemWindows){
+        if (isFitsSystemWindows) {
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) rootView.getLayoutParams();
-            if(null != lp){
+            if (null != lp) {
                 lp.topMargin += statusHeight;
                 rootView.setTag(CUSTOM_TOP_MARGIN);
             }
@@ -406,9 +416,8 @@ public class StatusBarUtil {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private static void transparentStatusBar(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            activity.getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
             activity.getWindow().setStatusBarColor(Color.parseColor("#05000000"));
         } else {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -442,6 +451,7 @@ public class StatusBarUtil {
         int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
         return context.getResources().getDimensionPixelSize(resourceId);
     }
+
 
     /**
      * 计算状态栏颜色

@@ -12,6 +12,18 @@
         android:background="@drawable/bg_monkey"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="我在最顶端"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="我在最底端"/>
+
         <Button
             android:id="@+id/btn_change_to_color"
             android:layout_width="wrap_content"
